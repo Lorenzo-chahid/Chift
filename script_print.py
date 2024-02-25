@@ -31,9 +31,9 @@ fields = models.execute_kw(
 
 for field, attrs in fields.items():
     print(f"Champ: {field}")
-    print(f"    Description: {attrs.get('string', '')}")
-    print(f"    Type: {attrs.get('type', '')}")
-    print(f"    Aide: {attrs.get('help', '')}\n")
+    print(f"Description: {attrs.get('string', '')}")
+    print(f"Type: {attrs.get('type', '')}")
+    print(f"Aide: {attrs.get('help', '')}\n")
 
 contacts = models.execute_kw(
     db,

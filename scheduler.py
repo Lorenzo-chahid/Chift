@@ -1,11 +1,17 @@
 import schedule
 import time
 import subprocess
+import logging
 
 
 def job():
-    print("Récupération des contacts...")
-    subprocess.run(["python3", "./script_print.py"])
+    try:
+        logging.info("Début de la récupération des contacts.")
+        print("Récupération des contacts...")
+        subprocess.run(["python3", "./script_print.py"])
+        logging.info("Récupération et sauvegarde des contacts terminées.")
+    except Exception as e:
+        logging.error(f"Erreur lors de la récupération des contacts: {e}")
 
 
 schedule.every(10).seconds.do(job)

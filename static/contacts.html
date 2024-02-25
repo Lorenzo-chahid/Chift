@@ -7,10 +7,12 @@
     <title>Contacts</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
     <style>
-        .pagination-container {
-            display: flex;
+        body {
+            padding: 20px;
+        }
+
+        .pagination-list {
             justify-content: center;
-            margin-top: 20px;
         }
     </style>
 </head>
@@ -18,20 +20,21 @@
 <body>
     <section class="section">
         <div class="container">
+            <h1 class="title has-text-centered">Contacts</h1>
             <div class="columns is-multiline" id="contacts"></div>
-            <div class="pagination-container" id="pagination">
-                <button class="pagination-previous" onclick="changePage(-1)">Précédent</button>
-                <button class="pagination-next" onclick="changePage(1)">Suivant</button>
-            </div>
+            <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+                <a class="pagination-previous" id="prevPage">Previous</a>
+                <a class="pagination-next" id="nextPage">Next</a>
+            </nav>
         </div>
     </section>
     <script>
         let currentPage = 0;
         const limit = 10;
-        let totalPages = 0;
 
-        async function fetchContacts() {
-            const response = await fetch(`/contacts?skip=${currentPage * limit}&limit=${limit}`);
+        async function fetchContacts(page = 0) {
+            const skip = page * limit;
+            const response = await fetch(`/contacts?skip=${skip}&limit=${limit}`);
             const contacts = await response.json();
 
             const container = document.getElementById('contacts');
@@ -40,32 +43,26 @@
                 const card = document.createElement('div');
                 card.className = 'column is-one-quarter-desktop is-half-tablet';
                 card.innerHTML = `
-                    <a class="card" href="/contact/${contact.id}">
+                    <div class="card clickable-card">
                         <div class="card-content">
                             <p class="title is-4">${contact.name}</p>
                             <p class="subtitle is-6">${contact.email}</p>
                             <div class="content">Phone: ${contact.phone ? contact.phone : 'N/A'}</div>
                         </div>
-                    </a>`;
+                    </div>`;
+                card.addEventListener('click', () => showContactDetails(contact));
                 container.appendChild(card);
             });
+
+            document.getElementById('prevPage').onclick = () => { if (currentPage > 0) fetchContacts(--currentPage); };
+            document.getElementById('nextPage').onclick = () => fetchContacts(++currentPage);
         }
 
-        async function changePage(offset) {
-            currentPage += offset;
-            if (currentPage < 0) currentPage = 0;
-            if (currentPage >= totalPages) currentPage = totalPages - 1;
-            await fetchContacts();
+        function showContactDetails(contact) {
+            alert(`Contact Details:\nName: ${contact.name}\nEmail: ${contact.email}\nPhone: ${contact.phone}`);
         }
 
-        async function initialize() {
-            const countResponse = await fetch('/contacts/count');
-            const countData = await countResponse.json();
-            totalPages = Math.ceil(countData.count / limit);
-            await fetchContacts();
-        }
-
-        initialize();
+        fetchContacts();
     </script>
 </body>
 
