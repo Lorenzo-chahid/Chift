@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacts</title>
+    <!-- Inclusion du CDN Bulma -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
+    <style>
+        body {
+            padding: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <section class="section">
+        <div class="container">
+            <h1 class="title">Contacts</h1>
+            <div class="columns is-multiline" id="contacts">
+                <!-- Les contacts seront injectés ici -->
+            </div>
+        </div>
+    </section>
+
+    <script>
+        async function fetchContacts() {
+            const response = await fetch('/contacts');
+            const contacts = await response.json();
+
+            const container = document.getElementById('contacts');
+            contacts.forEach(contact => {
+                const card = document.createElement('div');
+                card.className = 'column is-one-quarter-desktop is-half-tablet';
+
+                card.innerHTML = `
+                    <div class="card">
+                        <div class="card-content">
+                            <p class="title is-4">${contact.name}</p>
+                            <p class="subtitle is-6">${contact.email}</p>
+                            <div class="content">
+                                Phone: ${contact.phone ? contact.phone : 'N/A'}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        fetchContacts();
+    </script>
+</body>
+
+</html>
