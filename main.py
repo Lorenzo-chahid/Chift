@@ -3,12 +3,12 @@ import sqlalchemy
 from databases import Database
 from dotenv import load_dotenv
 
-
+from sqlalchemy.sql import select
 from passlib.context import CryptContext
 from models import metadata, database, engine, users
 
-from fastapi import FastAPI, HTTPException, Request, Depends
-from fastapi.responses import HTMLResponse, FileResponse
+from fastapi import FastAPI, HTTPException, Request, status, Depends, Form
+from fastapi.responses import HTMLResponse, FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -100,3 +100,20 @@ async def create_user(form_data: OAuth2PasswordRequestForm = Depends()):
 @app.get("/users/create", response_class=HTMLResponse)
 def create_user_form(request: Request):
     return templates.TemplateResponse("create_user.html", {"request": request})
+
+
+@app.get("/login", response_class=HTMLResponse)
+async def login_form(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
+
+
+@app.post("/login")
+async def login(username: str = Form(...), password: str = Form(...)):
+    query = select(users).where(users.c.username == username)
+    user = await database.fetch_one(query)
+    if not user or not verify_password(password, user["password"]):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+        )
+    return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
