@@ -20,8 +20,8 @@ Ensure you have the following installed:
 First, clone the project repository and navigate to the project directory:
 
 ```bash
-git clone https://your-repository-url.git
-cd your-project-directory
+git clone https://github.com/Lorenzo-chahid/Chift.git
+cd Chift
 ```
 
 Then, create and activate a Python virtual environment:
