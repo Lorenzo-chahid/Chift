@@ -5,11 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contacts</title>
-    <!-- Inclusion du CDN Bulma -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
     <style>
-        body {
-            padding: 20px;
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination-info {
+            text-align: center;
+            width: 100%;
         }
     </style>
 </head>
@@ -17,39 +23,62 @@
 <body>
     <section class="section">
         <div class="container">
-            <h1 class="title">Contacts</h1>
-            <div class="columns is-multiline" id="contacts">
-                <!-- Les contacts seront injectés ici -->
+            <div class="columns is-multiline" id="contacts"></div>
+            <p id="pagination-info" class="pagination-info"></p>
+            <div class="pagination-container" id="pagination">
+                <button class="pagination-previous" onclick="changePage(-1)">Précédent</button>
+                <button class="pagination-next" onclick="changePage(1)">Suivant</button>
             </div>
         </div>
     </section>
-
     <script>
+        let currentPage = 0;
+        const limit = 10;
+        let totalPages = 0;
+
         async function fetchContacts() {
-            const response = await fetch('/contacts');
+            const response = await fetch(`/contacts?skip=${currentPage * limit}&limit=${limit}`);
             const contacts = await response.json();
 
             const container = document.getElementById('contacts');
+            container.innerHTML = '';
             contacts.forEach(contact => {
                 const card = document.createElement('div');
                 card.className = 'column is-one-quarter-desktop is-half-tablet';
-
                 card.innerHTML = `
-                    <div class="card">
+                    <a class="card" href="/contact/${contact.id}">
                         <div class="card-content">
                             <p class="title is-4">${contact.name}</p>
                             <p class="subtitle is-6">${contact.email}</p>
-                            <div class="content">
-                                Phone: ${contact.phone ? contact.phone : 'N/A'}
-                            </div>
+                            <div class="content">Phone: ${contact.phone ? contact.phone : 'N/A'}</div>
                         </div>
-                    </div>
-                `;
+                    </a>`;
                 container.appendChild(card);
             });
         }
 
-        fetchContacts();
+        function updatePaginationInfo() {
+            const infoElement = document.getElementById('pagination-info');
+            infoElement.textContent = `Page ${currentPage + 1} sur ${totalPages}`;
+        }
+
+        async function changePage(offset) {
+            currentPage += offset;
+            if (currentPage < 0) currentPage = 0;
+            if (currentPage >= totalPages) currentPage = totalPages - 1;
+            updatePaginationInfo();
+            await fetchContacts();
+        }
+
+        async function initialize() {
+            const countResponse = await fetch('/contacts/count');
+            const countData = await countResponse.json();
+            totalPages = Math.ceil(countData.count / limit);
+            updatePaginationInfo();
+            await fetchContacts();
+        }
+
+        initialize();
     </script>
 </body>
 

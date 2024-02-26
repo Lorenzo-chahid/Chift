@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacts</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
+    <style>
+        body {
+            padding: 20px;
+        }
+
+        .pagination-list {
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body>
+    <section class="section">
+        <div class="container">
+            <h1 class="title has-text-centered">Contacts</h1>
+            <div class="columns is-multiline" id="contacts"></div>
+            <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+                <a class="pagination-previous" id="prevPage">Previous</a>
+                <a class="pagination-next" id="nextPage">Next</a>
+            </nav>
+        </div>
+    </section>
+    <script>
+        let currentPage = 0;
+        const limit = 10;
+
+        async function fetchContacts(page = 0) {
+            const skip = page * limit;
+            const response = await fetch(`/contacts?skip=${skip}&limit=${limit}`);
+            const contacts = await response.json();
+
+            const container = document.getElementById('contacts');
+            container.innerHTML = '';
+            contacts.forEach(contact => {
+                const card = document.createElement('div');
+                card.className = 'column is-one-quarter-desktop is-half-tablet';
+                card.innerHTML = `
+                    <div class="card clickable-card">
+                        <div class="card-content">
+                            <p class="title is-4">${contact.name}</p>
+                            <p class="subtitle is-6">${contact.email}</p>
+                            <div class="content">Phone: ${contact.phone ? contact.phone : 'N/A'}</div>
+                        </div>
+                    </div>`;
+                card.addEventListener('click', () => showContactDetails(contact));
+                container.appendChild(card);
+            });
+
+            document.getElementById('prevPage').onclick = () => { if (currentPage > 0) fetchContacts(--currentPage); };
+            document.getElementById('nextPage').onclick = () => fetchContacts(++currentPage);
+        }
+
+        function showContactDetails(contact) {
+            alert(`Contact Details:\nName: ${contact.name}\nEmail: ${contact.email}\nPhone: ${contact.phone}`);
+        }
+
+        fetchContacts();
+    </script>
+</body>
+
+</html>
