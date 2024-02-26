@@ -3,9 +3,12 @@ from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from databases import Database
+from dotenv import load_dotenv
 import sqlalchemy
+import os
 
-DATABASE_URL = "postgres://admin:LYbMkR6K8JnwIOSkaaRf0YFQuUD0dOOn@dpg-cndss1mct0pc73824l20-a.frankfurt-postgres.render.com/chift_nc3y"
+load_dotenv()
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 database = Database(DATABASE_URL)
 metadata = sqlalchemy.MetaData()
