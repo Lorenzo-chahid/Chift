@@ -17,12 +17,21 @@
             text-align: center;
             width: 100%;
         }
+
+        .search-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 
 <body>
     <section class="section">
         <div class="container">
+            <div class="search-container">
+                <input id="search-input" class="input" type="text" placeholder="Entrez un ID de contact">
+                <button id="search-button" class="button is-info">Rechercher</button>
+            </div>
             <div class="columns is-multiline" id="contacts"></div>
             <p id="pagination-info" class="pagination-info"></p>
             <div class="pagination-container" id="pagination">
@@ -35,6 +44,24 @@
         let currentPage = 0;
         const limit = 10;
         let totalPages = 0;
+
+        async function goToContactPage() {
+            const searchInput = document.getElementById('search-input');
+            const contactId = searchInput.value.trim();
+
+            if (contactId) {
+                const response = await fetch(`/contact/${contactId}`);
+
+                if (response.ok) {
+                    window.location.href = `/contact/${contactId}`;
+                } else {
+                    alert("Le contact avec l'ID spécifié n'existe pas.");
+                    searchInput.value = '';
+                }
+            }
+        }
+
+        document.getElementById('search-button').addEventListener('click', goToContactPage);
 
         async function fetchContacts() {
             const response = await fetch(`/contacts?skip=${currentPage * limit}&limit=${limit}`);
