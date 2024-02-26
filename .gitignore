@@ -1,2 +1,3 @@
 odooEnv/
 __pycache__/
+.env
