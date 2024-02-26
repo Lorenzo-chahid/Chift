@@ -41,7 +41,7 @@ Create a .env file in the project root directory. Add your environment variables
 
 makefile
 Copy code
-DATABASE_URL="postgresql://admin:LYbMkR6K8JnwIOSkaaRf0YFQuUD0dOOn@dpg-cndss1mct0pc73824l20-a.frankfurt-postgres.render.com/chift_nc3y"
+DATABASE_URL="your_database_url"
 ODOO_URL="your_odoo_url"
 ODOO_DB="your_odoo_db_name"
 ODOO_USERNAME="your_odoo_username"
