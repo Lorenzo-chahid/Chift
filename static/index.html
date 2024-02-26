@@ -12,6 +12,11 @@
             justify-content: center;
             margin-top: 20px;
         }
+
+        .pagination-info {
+            text-align: center;
+            width: 100%;
+        }
     </style>
 </head>
 
@@ -19,6 +24,7 @@
     <section class="section">
         <div class="container">
             <div class="columns is-multiline" id="contacts"></div>
+            <p id="pagination-info" class="pagination-info"></p>
             <div class="pagination-container" id="pagination">
                 <button class="pagination-previous" onclick="changePage(-1)">Précédent</button>
                 <button class="pagination-next" onclick="changePage(1)">Suivant</button>
@@ -51,10 +57,16 @@
             });
         }
 
+        function updatePaginationInfo() {
+            const infoElement = document.getElementById('pagination-info');
+            infoElement.textContent = `Page ${currentPage + 1} sur ${totalPages}`;
+        }
+
         async function changePage(offset) {
             currentPage += offset;
             if (currentPage < 0) currentPage = 0;
             if (currentPage >= totalPages) currentPage = totalPages - 1;
+            updatePaginationInfo();
             await fetchContacts();
         }
 
@@ -62,6 +74,7 @@
             const countResponse = await fetch('/contacts/count');
             const countData = await countResponse.json();
             totalPages = Math.ceil(countData.count / limit);
+            updatePaginationInfo();
             await fetchContacts();
         }
 
